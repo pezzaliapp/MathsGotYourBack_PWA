@@ -18,7 +18,7 @@
     canvas{width:100%;height:100%;display:block;background:transparent}
     .controls{display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:10px}
     .controls label{opacity:.85}
-    input[type=range]{width:min(42vw,300px)}
+    input[type=range]{width:min(36vw,280px)}
     .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
     button{background:#111;border:1px solid #333;color:#fff;padding:10px 14px;border-radius:999px;cursor:pointer}
     button:hover{background:#171717}
@@ -38,10 +38,12 @@
       <input id="speed" type="range" min="3" max="20" value="7" step="1"><span id="speedVal">7s</span>
 
       <label for="trail">Trail length</label>
-      <input id="trail" type="range" min="10" max="140" value="120" step="10"><span id="trailVal">120</span>
+      <input id="trail" type="range" min="10" max="180" value="120" step="10"><span id="trailVal">120</span>
 
       <label for="prec">Precession (°/rev)</label>
       <input id="prec" type="range" min="-60" max="60" value="12" step="3"><span id="precVal">+12°</span>
+
+      <button id="hyperBtn" aria-pressed="false" title="Higher-fidelity trail">Hyper‑trail: OFF</button>
     </div>
 
     <div class="btns">

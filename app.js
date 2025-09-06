@@ -1,4 +1,4 @@
-/* MIT © 2025 Alessandro Pezzali — MathsGotYourBack PWA (satellite + discrete trail + precession) */
+/* MIT © 2025 Alessandro Pezzali — MathsGotYourBack PWA (precession + hyper‑trail) */
 (() => {
   const shareBtn = document.getElementById('shareBtn');
   const installBtn = document.getElementById('installBtn');
@@ -8,6 +8,7 @@
   const trailVal = document.getElementById('trailVal');
   const precRange = document.getElementById('prec');
   const precVal = document.getElementById('precVal');
+  const hyperBtn = document.getElementById('hyperBtn');
 
   // Canvas
   const canvas = document.getElementById('orb');
@@ -29,9 +30,11 @@
   let speed = Number(localStorage.getItem('speed') || 7); // sec / rev
   let trailCount = Number(localStorage.getItem('trailCount') || 120);
   let precDegPerRev = Number(localStorage.getItem('precDegPerRev') || 12); // degrees per revolution
+  let hyper = (localStorage.getItem('hyper') || '0') === '1';
   speedRange.value = speed; speedVal.textContent = speed + 's';
   trailRange.value = trailCount; trailVal.textContent = trailCount;
   precRange.value = precDegPerRev; precVal.textContent = (precDegPerRev>=0?'+':'') + precDegPerRev + '°';
+  setHyper(hyper);
 
   speedRange.addEventListener('input', e => {
     speed = Number(e.target.value); speedVal.textContent = speed + 's';
@@ -46,6 +49,14 @@
     precVal.textContent = (precDegPerRev>=0?'+':'') + precDegPerRev + '°';
     localStorage.setItem('precDegPerRev', precDegPerRev);
   });
+  hyperBtn.addEventListener('click', () => setHyper(!hyper));
+
+  function setHyper(val){
+    hyper = val;
+    hyperBtn.textContent = 'Hyper‑trail: ' + (hyper ? 'ON' : 'OFF');
+    hyperBtn.setAttribute('aria-pressed', String(hyper));
+    localStorage.setItem('hyper', hyper ? '1' : '0');
+  }
 
   // Orbit (radii only; tilt handled per-sample with precession)
   function getOrbit(){
@@ -64,45 +75,48 @@
 
     const {cx, cy, rx, ry} = getOrbit();
 
-    // Clear each frame
+    // Clear
     ctx.fillStyle = '#000';
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    // Angle step along the trail (covers ~3/4 orbita a 120 campioni)
-    const step = (Math.PI * 1.5) / Math.max(10, trailCount);
-
-    // advance
+    // Advance
     const revPerSec = 1 / Math.max(0.001, speed);
     theta += 2*Math.PI*revPerSec*dt;
 
-    // Convert precession to radians per radian of orbital angle (k)
-    const k = (precDegPerRev * Math.PI/180) / (2*Math.PI); // rad of tilt per rad of theta
+    // Precession coefficient
+    const k = (precDegPerRev * Math.PI/180) / (2*Math.PI);
 
-    // Draw from far trail to head
-    for (let i = trailCount; i >= 0; i--){
-      const ang = theta - i*step;
-      const tilt = baseTilt + k * ang; // precession here
+    // Trail step (angle spacing) and oversampling
+    const trailSamples = Math.max(10, trailCount);
+    const step = (Math.PI * 1.5) / trailSamples;
+    const oversample = hyper ? 4 : 1; // sub-steps between each trail point
 
-      const x = rx * Math.cos(ang);
-      const y = ry * Math.sin(ang);
-      const xt =  x * Math.cos(tilt) - y * Math.sin(tilt);
-      const yt =  x * Math.sin(tilt) + y * Math.cos(tilt);
-      const px = cx + xt;
-      const py = cy + yt;
+    // Render trail from far to near
+    for (let i = trailSamples; i >= 0; i--){
+      for (let sub = oversample-1; sub >= 0; sub--){
+        const ang = theta - i*step - (sub/oversample)*step;
+        const tilt = baseTilt + k * ang;
 
-      // Size/opacity taper
-      const t = i / (trailCount || 1);
-      const r = Math.max(3*dpr, Math.min(canvas.width, canvas.height) * 0.008) * (0.6 + 0.4*(1 - t));
-      const alpha = (1 - t) ** 2 * 0.9 + 0.1;
+        const x = rx * Math.cos(ang);
+        const y = ry * Math.sin(ang);
+        const xt =  x * Math.cos(tilt) - y * Math.sin(tilt);
+        const yt =  x * Math.sin(tilt) + y * Math.cos(tilt);
+        const px = cx + xt;
+        const py = cy + yt;
 
-      // draw
-      ctx.save();
-      ctx.globalCompositeOperation = 'lighter';
-      ctx.fillStyle = `rgba(255,255,255,${alpha*0.08})`;
-      ctx.beginPath(); ctx.arc(px, py, r*2.0, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = `rgba(255,255,255,${alpha})`;
-      ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI*2); ctx.fill();
-      ctx.restore();
+        // Taper based on overall distance behind head
+        const t = (i + sub/oversample) / trailSamples;
+        const r = Math.max(2.8*dpr, Math.min(canvas.width, canvas.height) * 0.0075) * (0.55 + 0.45*(1 - t));
+        const alpha = (1 - t) ** 2 * 0.9 + 0.1;
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.fillStyle = `rgba(255,255,255,${alpha*0.07})`;
+        ctx.beginPath(); ctx.arc(px, py, r*2.0, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+        ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI*2); ctx.fill();
+        ctx.restore();
+      }
     }
 
     requestAnimationFrame(draw);
