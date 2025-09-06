@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Math's Got Your Back — PWA</title>
+  <meta name="description" content="Tiny offline PWA poster with the motto: Math's got your back.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png" sizes="192x192">
+  <meta name="theme-color" content="#000000">
+  <style>
+    :root{--bg:#000;--fg:#fff;--accent:#fff;}
+    html,body{height:100%;margin:0;}
+    body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,sans-serif;display:flex;align-items:center;justify-content:center;text-align:center}
+    .wrap{max-width:900px;padding:24px}
+    h1{font-size:min(12vw,72px);letter-spacing:1px;margin:0 0 8px 0}
+    .sub{opacity:.85;margin:0 0 20px 0}
+    .orbit{position:relative;display:inline-block;margin-top:12px}
+    .ring{width:min(80vw,520px);height:min(45vw,280px);border:2px solid var(--accent);border-radius:50%/60% 60% 40% 40%;opacity:.7;transform:rotate(-12deg)}
+    .dot{position:absolute;top:50%;left:50%;width:14px;height:14px;background:var(--fg);border-radius:50%;transform:translate(-50%,-50%);animation:orbit 7s linear infinite}
+    @keyframes orbit{
+      from{transform:translate(-50%,-50%) rotate(0deg) translateX(calc(min(40vw,260px))) rotate(0deg)}
+      to{transform:translate(-50%,-50%) rotate(360deg) translateX(calc(min(40vw,260px))) rotate(-360deg)}
+    }
+    .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+    button{background:#111;border:1px solid #333;color:#fff;padding:10px 14px;border-radius:999px;cursor:pointer}
+    button:hover{background:#171717}
+    footer{opacity:.6;font-size:12px;margin-top:18px}
+    a{color:#ddd}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="orbit">
+      <div class="ring"></div>
+      <div class="dot" aria-hidden="true"></div>
+    </div>
+    <h1 id="motto">MATH'S GOT YOUR BACK.</h1>
+    <p class="sub" id="subtitle">La matematica è dalla tua parte.</p>
+    <div class="btns">
+      <button id="toggleLang" aria-label="Toggle language">IT / EN</button>
+      <button id="shareBtn" aria-label="Share">Condividi</button>
+      <button id="installBtn" hidden aria-label="Install app">Installa</button>
+    </div>
+    <footer>
+      <span>Offline-ready PWA. MIT © 2025 Alessandro Pezzali / PezzaliAPP.</span>
+      · <a href="README.html">Readme</a>
+    </footer>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
