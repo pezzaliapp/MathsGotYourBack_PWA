@@ -9,34 +9,46 @@
   <link rel="icon" href="icon-192.png" sizes="192x192">
   <meta name="theme-color" content="#000000">
   <style>
-    :root{--bg:#000;--fg:#fff;--accent:#fff;}
-    html,body{height:100%;margin:0;}
+    :root{--bg:#000;--fg:#fff;--accent:#fff;--speed:7s;}
+    html,body{height:100%;margin:0}
     body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,sans-serif;display:flex;align-items:center;justify-content:center;text-align:center}
-    .wrap{max-width:900px;padding:24px}
-    h1{font-size:min(12vw,72px);letter-spacing:1px;margin:0 0 8px 0}
+    .wrap{max-width:980px;padding:24px}
+    h1{font-size:min(12vw,72px);letter-spacing:1px;margin:10px 0 8px 0}
     .sub{opacity:.85;margin:0 0 20px 0}
-    .orbit{position:relative;display:inline-block;margin-top:12px}
-    .ring{width:min(80vw,520px);height:min(45vw,280px);border:2px solid var(--accent);border-radius:50%/60% 60% 40% 40%;opacity:.7;transform:rotate(-12deg)}
-    .dot{position:absolute;top:50%;left:50%;width:14px;height:14px;background:var(--fg);border-radius:50%;transform:translate(-50%,-50%);animation:orbit 7s linear infinite}
-    @keyframes orbit{
-      from{transform:translate(-50%,-50%) rotate(0deg) translateX(calc(min(40vw,260px))) rotate(0deg)}
-      to{transform:translate(-50%,-50%) rotate(360deg) translateX(calc(min(40vw,260px))) rotate(-360deg)}
+    .orbit{position:relative;display:inline-block;margin-top:12px; transform:rotate(-12deg);}
+    .ring{width:min(80vw,640px);height:min(45vw,320px);border:2px solid var(--accent);border-radius:50%/60% 60% 40% 40%;opacity:.7}
+    .dot{position:absolute;top:0;left:0;width:14px;height:14px;background:var(--fg);border-radius:50%;offset-rotate:0deg; filter: drop-shadow(0 0 6px #fff) drop-shadow(0 0 14px #fff);}
+    .trail{position:absolute;top:0;left:0;border-radius:50%;background:#ffffff99;offset-rotate:0deg; filter: blur(2px); opacity:.6}
+    @keyframes along {
+      from { offset-distance: 0%; }
+      to   { offset-distance: 100%; }
     }
-    .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+    .controls{display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:14px}
+    .controls label{opacity:.85}
+    input[type=range]{width:min(60vw,360px)}
+    .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
     button{background:#111;border:1px solid #333;color:#fff;padding:10px 14px;border-radius:999px;cursor:pointer}
     button:hover{background:#171717}
-    footer{opacity:.6;font-size:12px;margin-top:18px}
+    footer{opacity:.6;font-size:12px;margin-top:14px}
     a{color:#ddd}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="orbit">
-      <div class="ring"></div>
-      <div class="dot" aria-hidden="true"></div>
+    <div class="orbit" id="orbit">
+      <div class="ring" id="ring"></div>
+      <div class="dot" id="dot" aria-hidden="true"></div>
+      <!-- trail dots created via JS -->
     </div>
     <h1 id="motto">MATH'S GOT YOUR BACK.</h1>
     <p class="sub" id="subtitle">La matematica è dalla tua parte.</p>
+
+    <div class="controls">
+      <label for="speed">Velocità orbita</label>
+      <input id="speed" type="range" min="3" max="20" value="7" step="1">
+      <span id="speedVal">7s</span>
+    </div>
+
     <div class="btns">
       <button id="toggleLang" aria-label="Toggle language">IT / EN</button>
       <button id="shareBtn" aria-label="Share">Condividi</button>
