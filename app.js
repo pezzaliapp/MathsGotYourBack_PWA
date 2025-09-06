@@ -1,4 +1,4 @@
-/* MIT © 2025 Alessandro Pezzali — MathsGotYourBack PWA (canvas trail v2) */
+/* MIT © 2025 Alessandro Pezzali — MathsGotYourBack PWA (satellite + discrete trail) */
 (() => {
   const shareBtn = document.getElementById('shareBtn');
   const installBtn = document.getElementById('installBtn');
@@ -17,7 +17,6 @@
     const rect = canvas.getBoundingClientRect();
     canvas.width = Math.round(rect.width * dpr);
     canvas.height = Math.round(rect.height * dpr);
-    // Clear to black immediately
     ctx.fillStyle = '#000';
     ctx.fillRect(0,0,canvas.width,canvas.height);
   }
@@ -26,9 +25,9 @@
 
   // Params
   let speed = Number(localStorage.getItem('speed') || 7); // seconds / revolution
-  let trailIntensity = Number(localStorage.getItem('trailIntensity') || 9); // 1..10
+  let trailCount = Number(localStorage.getItem('trailCount') || 90); // number of samples behind the satellite
   speedRange.value = speed; speedVal.textContent = speed + 's';
-  trailRange.value = trailIntensity; trailVal.textContent = trailIntensity;
+  trailRange.value = trailCount; trailVal.textContent = trailCount;
 
   speedRange.addEventListener('input', e => {
     speed = Number(e.target.value);
@@ -36,12 +35,12 @@
     localStorage.setItem('speed', speed);
   });
   trailRange.addEventListener('input', e => {
-    trailIntensity = Number(e.target.value);
-    trailVal.textContent = trailIntensity;
-    localStorage.setItem('trailIntensity', trailIntensity);
+    trailCount = Number(e.target.value);
+    trailVal.textContent = trailCount;
+    localStorage.setItem('trailCount', trailCount);
   });
 
-  // Orbit (invisible, only positions)
+  // Orbit (invisible)
   function getOrbit(){
     const w = canvas.width, h = canvas.height;
     const cx = w/2, cy = h/2;
@@ -51,57 +50,49 @@
     return {cx, cy, rx, ry, tilt};
   }
 
-  // Strong trail rendering
+  // Draw
   let theta = 0, lastTime = performance.now();
   function draw(now){
     const dt = (now - lastTime) / 1000; lastTime = now;
-
     const {cx, cy, rx, ry, tilt} = getOrbit();
 
-    // Trail persistence: map 1..10 -> alpha clear 0.18..0.02 (lower alpha = longer trail)
-    const clearAlpha = 0.2 - (trailIntensity-1) * (0.18/9);
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.fillStyle = `rgba(0,0,0,${clearAlpha.toFixed(3)})`;
+    // Clear completely each frame (no band build-up)
+    ctx.fillStyle = '#000';
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    // Advance
+    // Angle step along the trail (cover roughly 3/4 of orbit by default at 90 samples)
+    const step = (Math.PI * 1.5) / Math.max(10, trailCount);
+
+    // advance
     const revPerSec = 1 / Math.max(0.001, speed);
     theta += 2*Math.PI*revPerSec*dt;
 
-    // Position
-    const x = rx * Math.cos(theta);
-    const y = ry * Math.sin(theta);
-    const xt =  x * Math.cos(tilt) - y * Math.sin(tilt);
-    const yt =  x * Math.sin(tilt) + y * Math.cos(tilt);
-    const px = cx + xt;
-    const py = cy + yt;
+    // Draw from farthest trail to satellite (so satellite stays on top)
+    for (let i = trailCount; i >= 0; i--){
+      const ang = theta - i*step;
+      const x = rx * Math.cos(ang);
+      const y = ry * Math.sin(ang);
+      const xt =  x * Math.cos(tilt) - y * Math.sin(tilt);
+      const yt =  x * Math.sin(tilt) + y * Math.cos(tilt);
+      const px = cx + xt;
+      const py = cy + yt;
 
-    // Draw glowing core + outer bloom using additive blending
-    const baseR = Math.max(7*dpr, Math.min(canvas.width, canvas.height) * 0.014);
-    ctx.save();
-    ctx.globalCompositeOperation = 'lighter';
+      // Size and opacity taper
+      const t = i / (trailCount || 1);
+      const r = Math.max(3*dpr, Math.min(canvas.width, canvas.height) * 0.008) * (0.6 + 0.4*(1 - t));
+      const alpha = (1 - t) ** 2 * 0.95 + 0.05; // brighter near head
 
-    // Outer bloom
-    ctx.fillStyle = 'rgba(255,255,255,0.08)';
-    for (let i=5; i<=40; i+=5){
-      ctx.beginPath();
-      ctx.arc(px, py, baseR + i*dpr, 0, Math.PI*2);
-      ctx.fill();
+      // Draw
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      // faint outer glow
+      ctx.fillStyle = `rgba(255,255,255,${alpha*0.08})`;
+      ctx.beginPath(); ctx.arc(px, py, r*2.2, 0, Math.PI*2); ctx.fill();
+      // core
+      ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+      ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI*2); ctx.fill();
+      ctx.restore();
     }
-
-    // Mid glow
-    ctx.fillStyle = 'rgba(255,255,255,0.25)';
-    ctx.beginPath();
-    ctx.arc(px, py, baseR*1.8, 0, Math.PI*2);
-    ctx.fill();
-
-    // Core
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    ctx.arc(px, py, baseR, 0, Math.PI*2);
-    ctx.fill();
-
-    ctx.restore();
 
     requestAnimationFrame(draw);
   }
