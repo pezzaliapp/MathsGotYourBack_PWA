@@ -1,29 +1,28 @@
 <!doctype html>
-<html lang="it">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Math's Got Your Back — PWA</title>
-  <meta name="description" content="Poster PWA minimale: una sola particella con scia orbitale.">
+  <title>Math’s got your back — PWA</title>
+  <meta name="description" content="Minimal poster PWA: a glowing particle with a long, persistent trail.">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon-192.png" sizes="192x192">
   <meta name="theme-color" content="#000000">
   <style>
-    :root{--bg:#000;--fg:#fff;--speed:7; /* seconds per revolution */}
+    :root{--bg:#000;--fg:#fff;}
     html,body{height:100%;margin:0}
     body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,sans-serif;display:flex;align-items:center;justify-content:center;text-align:center}
     .wrap{max-width:980px;width:100%;padding:24px}
-    h1{font-size:min(12vw,72px);letter-spacing:1px;margin:10px 0 8px 0}
-    .sub{opacity:.85;margin:0 0 14px 0}
-    .stage{position:relative;display:block;margin:0 auto;width:min(84vw,760px);height:min(48vw,420px);}
-    canvas{width:100%;height:100%;display:block; background:transparent}
-    .controls{display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:14px}
+    h1{font-size:min(12vw,72px);letter-spacing:0.5px;margin:10px 0 8px 0}
+    .stage{position:relative;display:block;margin:0 auto 6px auto;width:min(84vw,760px);height:min(48vw,420px);}
+    canvas{width:100%;height:100%;display:block;background:transparent}
+    .controls{display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:10px}
     .controls label{opacity:.85}
     input[type=range]{width:min(60vw,360px)}
     .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
     button{background:#111;border:1px solid #333;color:#fff;padding:10px 14px;border-radius:999px;cursor:pointer}
     button:hover{background:#171717}
-    footer{opacity:.6;font-size:12px;margin-top:14px}
+    footer{opacity:.6;font-size:12px;margin-top:12px}
     a{color:#ddd}
   </style>
 </head>
@@ -32,23 +31,21 @@
     <div class="stage">
       <canvas id="orb"></canvas>
     </div>
-    <h1 id="motto">LA MATEMATICA TI COPRE LE SPALLE.</h1>
-    <p class="sub" id="subtitle">Math’s got your back.</p>
+    <h1 id="motto">Math’s got your back</h1>
 
     <div class="controls">
-      <label for="speed">Velocità orbita</label>
+      <label for="speed">Speed</label>
       <input id="speed" type="range" min="3" max="20" value="7" step="1">
       <span id="speedVal">7s</span>
 
-      <label for="trail">Intensità scia</label>
-      <input id="trail" type="range" min="1" max="10" value="7" step="1">
-      <span id="trailVal">7</span>
+      <label for="trail">Trail intensity</label>
+      <input id="trail" type="range" min="1" max="10" value="9" step="1">
+      <span id="trailVal">9</span>
     </div>
 
     <div class="btns">
-      <button id="toggleLang" aria-label="Toggle language">IT / EN</button>
-      <button id="shareBtn" aria-label="Share">Condividi</button>
-      <button id="installBtn" hidden aria-label="Install app">Installa</button>
+      <button id="shareBtn" aria-label="Share">Share</button>
+      <button id="installBtn" hidden aria-label="Install app">Install</button>
     </div>
     <footer>
       <span>Offline-ready PWA. MIT © 2025 Alessandro Pezzali / PezzaliAPP.</span>
