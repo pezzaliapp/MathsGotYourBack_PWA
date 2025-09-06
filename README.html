@@ -3,14 +3,15 @@
 <title>Math's Got Your Back — README</title>
 <style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;margin:24px;max-width:860px}code,pre{background:#111;color:#eee;padding:2px 6px;border-radius:6px}pre{padding:12px;overflow:auto}</style>
 </head><body>
-<h1>Math's Got Your Back — PWA</h1>
-<p>Una micro PWA, <em>offline-ready</em>, che mostra il motto <strong>“Math's got your back”</strong> con una semplice animazione orbitale. Include toggle IT/EN, condivisione, install prompt, e un service worker per la cache.</p>
-<h3>Uso</h3>
-<ol>
-<li>Metti tutti i file in una cartella su un hosting statico (GitHub Pages, Netlify, ecc.).</li>
-<li>Apri <code>index.html</code>. Installa come app dal browser.</li>
-</ol>
-<h3>Struttura</h3>
+<h1>Math's Got Your Back — PWA (Canvas Trail)</h1>
+<p>Versione minimale: <strong>niente ellisse disegnata</strong>, solo una particella luminosa con <em>scia continua</em> renderizzata su &lt;canvas&gt; (motion blur attraverso un velo trasparente).</p>
+<h3>Controlli</h3>
+<ul>
+<li><b>Velocità orbita</b> (3–20 s a rivoluzione)</li>
+<li><b>Intensità scia</b> (1–10) — più alto = dissolvenza più lenta</li>
+<li>Toggle lingua IT/EN, Share, Install</li>
+</ul>
+<h3>File</h3>
 <pre>index.html
 app.js
 manifest.json
@@ -19,6 +20,5 @@ icon-192.png
 icon-512.png
 README.html
 </pre>
-<h3>Licenza</h3>
 <p>MIT © 2025 Alessandro Pezzali / PezzaliAPP</p>
 </body></html>
