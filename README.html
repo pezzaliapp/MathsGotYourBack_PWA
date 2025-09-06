@@ -8,7 +8,19 @@
   code{padding:2px 6px}
   pre{padding:12px;overflow:auto}
   .muted{opacity:.8}
+  .floating-btn{
+    position:fixed;top:12px;right:12px;z-index:9999;
+    background:#0b0b0b;color:#fff;text-decoration:none;
+    padding:10px 14px;border-radius:999px;font-size:14px;
+    border:1px solid #2a2a2a; box-shadow:0 2px 10px rgba(0,0,0,.35);
+    display:inline-flex; align-items:center; gap:8px
+  }
+  .floating-btn:hover{background:#171717}
 </style></head><body>
+<a href="index.html" class="floating-btn" aria-label="Show the app">
+  <span aria-hidden="true">📱</span><span>Mostra la app</span>
+</a>
+
 <h1>Math’s got your back — PWA</h1>
 <p><strong>Math’s got your back.</strong><br>
 <span class="muted">Una micro–PWA minimale: un piccolo satellite che orbita e lascia una scia elegante. Pensata per presentazioni, landing, post social e schermate “about” di progetti STEM.</span></p>
@@ -47,8 +59,9 @@ Questa app la visualizza in modo essenziale: <strong>un punto</strong> e <strong
 <h2>Controlli</h2>
 <ul>
   <li><strong>Speed</strong> — secondi per rivoluzione (3–20s)</li>
-  <li><strong>Trail length</strong> — numero di “tracce” dietro al satellite (10–140). Valori alti = scia più lunga/continua.</li>
+  <li><strong>Trail length</strong> — numero di “tracce” dietro al satellite (10–140/180). Valori alti = scia più lunga/continua.</li>
   <li><strong>Precession</strong> — gradi di rotazione dell’ellisse <em>per ogni giro</em> (da −60° a +60°).</li>
+  <li><strong>Hyper-trail</strong> — render con sovracampionamento per scie più setose.</li>
 </ul>
 <p>Le preferenze vengono salvate in <code>localStorage</code>.</p>
 
@@ -65,7 +78,7 @@ README.md  / README.html
 <h2>Personalizzazione rapida</h2>
 <ul>
   <li><strong>Motto/titolo:</strong> modifica l’<code>&lt;h1&gt;</code> in <code>index.html</code></li>
-  <li><strong>Preset social:</strong> <code>Speed=6s</code>, <code>Trail length=120</code>, <code>Precession=+12°/giro</code></li>
+  <li><strong>Preset social:</strong> <code>Speed=6s</code>, <code>Trail length=120–180</code>, <code>Precession=+12°/giro</code>, <em>Hyper-trail ON</em></li>
   <li><strong>Colore sfondo/tema:</strong> cambia le variabili CSS in <code>index.html</code> (<code>--bg</code>, <code>--fg</code>)</li>
 </ul>
 
