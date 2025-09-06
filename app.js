@@ -1,4 +1,4 @@
-/* MIT © 2025 Alessandro Pezzali — MathsGotYourBack PWA (satellite + discrete trail) */
+/* MIT © 2025 Alessandro Pezzali — MathsGotYourBack PWA (satellite + discrete trail + precession) */
 (() => {
   const shareBtn = document.getElementById('shareBtn');
   const installBtn = document.getElementById('installBtn');
@@ -6,6 +6,8 @@
   const speedVal = document.getElementById('speedVal');
   const trailRange = document.getElementById('trail');
   const trailVal = document.getElementById('trailVal');
+  const precRange = document.getElementById('prec');
+  const precVal = document.getElementById('precVal');
 
   // Canvas
   const canvas = document.getElementById('orb');
@@ -23,53 +25,64 @@
   resize();
   window.addEventListener('resize', resize);
 
-  // Params
-  let speed = Number(localStorage.getItem('speed') || 7); // seconds / revolution
-  let trailCount = Number(localStorage.getItem('trailCount') || 90); // number of samples behind the satellite
+  // Params (persisted)
+  let speed = Number(localStorage.getItem('speed') || 7); // sec / rev
+  let trailCount = Number(localStorage.getItem('trailCount') || 120);
+  let precDegPerRev = Number(localStorage.getItem('precDegPerRev') || 12); // degrees per revolution
   speedRange.value = speed; speedVal.textContent = speed + 's';
   trailRange.value = trailCount; trailVal.textContent = trailCount;
+  precRange.value = precDegPerRev; precVal.textContent = (precDegPerRev>=0?'+':'') + precDegPerRev + '°';
 
   speedRange.addEventListener('input', e => {
-    speed = Number(e.target.value);
-    speedVal.textContent = speed + 's';
+    speed = Number(e.target.value); speedVal.textContent = speed + 's';
     localStorage.setItem('speed', speed);
   });
   trailRange.addEventListener('input', e => {
-    trailCount = Number(e.target.value);
-    trailVal.textContent = trailCount;
+    trailCount = Number(e.target.value); trailVal.textContent = trailCount;
     localStorage.setItem('trailCount', trailCount);
   });
+  precRange.addEventListener('input', e => {
+    precDegPerRev = Number(e.target.value);
+    precVal.textContent = (precDegPerRev>=0?'+':'') + precDegPerRev + '°';
+    localStorage.setItem('precDegPerRev', precDegPerRev);
+  });
 
-  // Orbit (invisible)
+  // Orbit (radii only; tilt handled per-sample with precession)
   function getOrbit(){
     const w = canvas.width, h = canvas.height;
     const cx = w/2, cy = h/2;
     const rx = Math.min(w, h) * 0.42;
     const ry = Math.min(w, h) * 0.26;
-    const tilt = -12 * Math.PI/180;
-    return {cx, cy, rx, ry, tilt};
+    return {cx, cy, rx, ry};
   }
 
   // Draw
   let theta = 0, lastTime = performance.now();
+  const baseTilt = -12 * Math.PI/180;
   function draw(now){
     const dt = (now - lastTime) / 1000; lastTime = now;
-    const {cx, cy, rx, ry, tilt} = getOrbit();
 
-    // Clear completely each frame (no band build-up)
+    const {cx, cy, rx, ry} = getOrbit();
+
+    // Clear each frame
     ctx.fillStyle = '#000';
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    // Angle step along the trail (cover roughly 3/4 of orbit by default at 90 samples)
+    // Angle step along the trail (covers ~3/4 orbita a 120 campioni)
     const step = (Math.PI * 1.5) / Math.max(10, trailCount);
 
     // advance
     const revPerSec = 1 / Math.max(0.001, speed);
     theta += 2*Math.PI*revPerSec*dt;
 
-    // Draw from farthest trail to satellite (so satellite stays on top)
+    // Convert precession to radians per radian of orbital angle (k)
+    const k = (precDegPerRev * Math.PI/180) / (2*Math.PI); // rad of tilt per rad of theta
+
+    // Draw from far trail to head
     for (let i = trailCount; i >= 0; i--){
       const ang = theta - i*step;
+      const tilt = baseTilt + k * ang; // precession here
+
       const x = rx * Math.cos(ang);
       const y = ry * Math.sin(ang);
       const xt =  x * Math.cos(tilt) - y * Math.sin(tilt);
@@ -77,18 +90,16 @@
       const px = cx + xt;
       const py = cy + yt;
 
-      // Size and opacity taper
+      // Size/opacity taper
       const t = i / (trailCount || 1);
       const r = Math.max(3*dpr, Math.min(canvas.width, canvas.height) * 0.008) * (0.6 + 0.4*(1 - t));
-      const alpha = (1 - t) ** 2 * 0.95 + 0.05; // brighter near head
+      const alpha = (1 - t) ** 2 * 0.9 + 0.1;
 
-      // Draw
+      // draw
       ctx.save();
       ctx.globalCompositeOperation = 'lighter';
-      // faint outer glow
       ctx.fillStyle = `rgba(255,255,255,${alpha*0.08})`;
-      ctx.beginPath(); ctx.arc(px, py, r*2.2, 0, Math.PI*2); ctx.fill();
-      // core
+      ctx.beginPath(); ctx.arc(px, py, r*2.0, 0, Math.PI*2); ctx.fill();
       ctx.fillStyle = `rgba(255,255,255,${alpha})`;
       ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI*2); ctx.fill();
       ctx.restore();

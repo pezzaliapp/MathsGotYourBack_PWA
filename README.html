@@ -1,24 +1,85 @@
 <!doctype html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Math's Got Your Back — README</title>
-<style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;margin:24px;max-width:860px}code,pre{background:#111;color:#eee;padding:2px 6px;border-radius:6px}pre{padding:12px;overflow:auto}</style>
-</head><body>
-<h1>Math's Got Your Back — PWA (Canvas Trail)</h1>
-<p>Versione minimale: <strong>niente ellisse disegnata</strong>, solo una particella luminosa con <em>scia continua</em> renderizzata su &lt;canvas&gt; (motion blur attraverso un velo trasparente).</p>
-<h3>Controlli</h3>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Math’s got your back — README</title>
+<style>
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;line-height:1.55;margin:24px;max-width:860px}
+  h1,h2,h3{line-height:1.2}
+  code,pre{background:#111;color:#eee;border-radius:8px}
+  code{padding:2px 6px}
+  pre{padding:12px;overflow:auto}
+  .muted{opacity:.8}
+</style></head><body>
+<h1>Math’s got your back — PWA</h1>
+<p><strong>Math’s got your back.</strong><br>
+<span class="muted">Una micro–PWA minimale: un piccolo satellite che orbita e lascia una scia elegante. Pensata per presentazioni, landing, post social e schermate “about” di progetti STEM.</span></p>
+
+<h2>Perché</h2>
+<p>La frase “Math’s got your back” sintetizza un’idea semplice: <strong>la matematica è dalla tua parte</strong>.
+Questa app la visualizza in modo essenziale: <strong>un punto</strong> e <strong>la sua scia</strong>.</p>
+
+<h2>Caratteristiche</h2>
 <ul>
-<li><b>Velocità orbita</b> (3–20 s a rivoluzione)</li>
-<li><b>Intensità scia</b> (1–10) — più alto = dissolvenza più lenta</li>
-<li>Toggle lingua IT/EN, Share, Install</li>
+  <li>🎯 <strong>Design minimale:</strong> solo satellite + scia, nessun elemento superfluo</li>
+  <li>⚙️ <strong>Controlli live:</strong> <em>Speed</em> (s/giro), <em>Trail length</em> (campioni scia) e <strong>Precession</strong> (°/giro)</li>
+  <li>🧭 <strong>Precessione ellittica:</strong> l’orbita cambia inclinazione mentre il satellite corre (puoi invertire il verso)</li>
+  <li>📱 <strong>Installabile:</strong> PWA “Add to Home Screen” su iOS/Android/Desktop</li>
+  <li>📡 <strong>Offline-ready:</strong> service worker con cache automatica</li>
+  <li>🔐 <strong>Zero tracking:</strong> nessun analytics, nessun cookie</li>
+  <li>🧩 <strong>Single-folder:</strong> tutto in una cartella, perfetto per GitHub Pages</li>
 </ul>
-<h3>File</h3>
+
+<h2>Utilizzi consigliati</h2>
+<ul>
+  <li>Hero banner per progetti educativi/STEM</li>
+  <li>Slide d’apertura per talk e workshop</li>
+  <li>Landing/portfolio con claim tecnico</li>
+  <li>Post LinkedIn/IG (screenshot o screencast)</li>
+</ul>
+
+<h2>Come usare</h2>
+<ol>
+  <li>Pubblica la cartella su un hosting statico (GitHub Pages, Netlify, Vercel, ecc.).</li>
+  <li>Apri <code>index.html</code>.</li>
+  <li>(Opzionale) Installa la PWA dal browser.</li>
+</ol>
+<p class="muted"><strong>Nota cache:</strong> se aggiorni i file, esegui un “hard refresh” per forzare il service worker a riprendere le nuove versioni.</p>
+
+<h2>Controlli</h2>
+<ul>
+  <li><strong>Speed</strong> — secondi per rivoluzione (3–20s)</li>
+  <li><strong>Trail length</strong> — numero di “tracce” dietro al satellite (10–140). Valori alti = scia più lunga/continua.</li>
+  <li><strong>Precession</strong> — gradi di rotazione dell’ellisse <em>per ogni giro</em> (da −60° a +60°).</li>
+</ul>
+<p>Le preferenze vengono salvate in <code>localStorage</code>.</p>
+
+<h2>Struttura</h2>
 <pre>index.html
 app.js
 manifest.json
 sw.js
 icon-192.png
 icon-512.png
-README.html
+README.md  / README.html
 </pre>
-<p>MIT © 2025 Alessandro Pezzali / PezzaliAPP</p>
+
+<h2>Personalizzazione rapida</h2>
+<ul>
+  <li><strong>Motto/titolo:</strong> modifica l’<code>&lt;h1&gt;</code> in <code>index.html</code></li>
+  <li><strong>Preset social:</strong> <code>Speed=6s</code>, <code>Trail length=120</code>, <code>Precession=+12°/giro</code></li>
+  <li><strong>Colore sfondo/tema:</strong> cambia le variabili CSS in <code>index.html</code> (<code>--bg</code>, <code>--fg</code>)</li>
+</ul>
+
+<h2>Tecnico (in breve)</h2>
+<ul>
+  <li>Rendering su <strong>Canvas 2D</strong></li>
+  <li>Scia tramite <strong>campionamento discreto</strong> di posizioni precedenti con blending <strong>lighter</strong></li>
+  <li><strong>Precessione</strong> implementata come tilt(t) = tilt₀ + k·θ, con k in radianti per giro</li>
+  <li>Service Worker semplice (cache-first) per offline</li>
+</ul>
+
+<h2>Licenza</h2>
+<p>MIT © 2025 Alessandro Pezzali / PezzaliAPP — usa e modifica liberamente con attribuzione.</p>
+
+<hr>
+<p><strong>Motto:</strong> <em>Math’s got your back.</em></p>
 </body></html>
